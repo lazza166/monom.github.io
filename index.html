@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONOM | Stampa 3D & Prototipazione</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+        --black:      #0A0A0A;
+        --orange:     #FF6B00;
+        --gray-dark:  #141414;
+        --gray-mid:   #232323;
+        --gray-muted: #777;
+        --white:      #F0F0F0;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--black); color: var(--white); font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.65; overflow-x: hidden; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 200; display: flex; justify-content: space-between; align-items: center; padding: 1rem 3.5rem; background: rgba(10,10,10,0.90); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,107,0,0.10); }
+    .nav-logo img { height: 28px; filter: invert(1); mix-blend-mode: screen; }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a { color: var(--gray-muted); text-decoration: none; font-size: 0.76rem; font-weight: 500; letter-spacing: 0.13em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--orange); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--white); }
+
+    /* HERO */
+    .hero { min-height: 100vh; display: grid; grid-template-columns: 1fr auto 1fr; grid-template-rows: 1fr auto 1fr; padding: 7rem 3.5rem 3.5rem; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(255,107,0,0.18) 1px, transparent 1px); background-size: 28px 28px; mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 80%); pointer-events: none; }
+    .hero::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 600px; height: 600px; background: radial-gradient(circle, rgba(255,107,0,0.05) 0%, transparent 65%); pointer-events: none; }
+    .hero-kw-tl { grid-column: 1; grid-row: 1; align-self: start; justify-self: start; padding-top: 2rem; position: relative; z-index: 1; }
+    .hero-kw-tr { grid-column: 3; grid-row: 1; align-self: start; justify-self: end; text-align: right; padding-top: 2rem; position: relative; z-index: 1; }
+    .hero-center { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 4rem; position: relative; z-index: 1; }
+    .hero-logo-img { width: clamp(200px, 26vw, 370px); filter: invert(1); mix-blend-mode: screen; margin-bottom: 1.8rem; }
+    .pixel-icon { color: var(--orange); width: clamp(36px, 4vw, 50px); height: clamp(36px, 4vw, 50px); }
+    .hero-kw-bl { grid-column: 1; grid-row: 3; align-self: end; justify-self: start; position: relative; z-index: 1; padding-bottom: 1.5rem; }
+    .hero-kw-br { grid-column: 3; grid-row: 3; align-self: end; justify-self: end; text-align: right; position: relative; z-index: 1; padding-bottom: 1.5rem; }
+    .hero-bottom { grid-column: 1 / 4; grid-row: 3; align-self: end; justify-self: center; text-align: center; position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; padding-bottom: 1.5rem; }
+    .hero-tagline { font-size: 0.72rem; color: var(--gray-muted); letter-spacing: 0.28em; text-transform: uppercase; font-weight: 300; }
+    .kw-big { font-family: 'Pixelify Sans', monospace; font-size: clamp(1rem, 2vw, 1.8rem); font-weight: 700; color: var(--white); display: block; line-height: 1.1; letter-spacing: 0.03em; }
+    .kw-big .orange { color: var(--orange); }
+    .kw-small { font-family: 'Pixelify Sans', monospace; font-size: clamp(0.6rem, 1vw, 0.8rem); font-weight: 400; color: var(--gray-muted); display: block; line-height: 1.5; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 0.4rem; }
+    .hero-cta { display: flex; gap: 1rem; }
+    .btn-primary { background: var(--orange); color: #000; border: none; padding: 0.82rem 2rem; font-family: 'Orbitron', monospace; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: background 0.2s, transform 0.2s; display: inline-block; }
+    .btn-primary:hover { background: #FF8533; transform: translateY(-2px); }
+    .btn-outline { background: transparent; color: var(--white); border: 1px solid rgba(255,255,255,0.20); padding: 0.82rem 2rem; font-family: 'Orbitron', monospace; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: border-color 0.2s, color 0.2s, transform 0.2s; display: inline-block; }
+    .btn-outline:hover { border-color: var(--orange); color: var(--orange); transform: translateY(-2px); }
+    .scroll-hint { position: absolute; bottom: 2rem; right: 3.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; color: rgba(255,107,0,0.4); font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; writing-mode: vertical-rl; z-index: 1; animation: fade-bob 3s ease-in-out infinite; }
+    .scroll-hint::before { content: ''; display: block; width: 1px; height: 48px; background: linear-gradient(to bottom, transparent, var(--orange)); }
+    @keyframes fade-bob { 0%,100%{opacity:.4;transform:translateY(0)}50%{opacity:.9;transform:translateY(5px)} }
+
+    /* DIVIDER */
+    .divider { width: 100%; height: 1px; background: linear-gradient(to right, transparent, rgba(255,107,0,0.22), transparent); }
+
+    /* SECTION COMMONS */
+    .section-wrap { padding: 7rem 3.5rem; max-width: 1200px; margin: 0 auto; }
+    .section-label { font-family: 'Pixelify Sans', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.9rem; }
+    .section-title { font-family: 'Orbitron', monospace; font-size: clamp(1.7rem, 3.5vw, 2.5rem); font-weight: 700; color: var(--white); margin-bottom: 0.8rem; }
+    .section-title::after { content: ''; display: block; width: 48px; height: 2px; background: var(--orange); margin-top: 0.9rem; }
+    .section-desc { color: var(--gray-muted); font-size: 0.94rem; max-width: 520px; font-weight: 300; margin-bottom: 3.5rem; line-height: 1.75; }
+
+    /* SERVICES */
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1px; background: var(--gray-mid); border: 1px solid var(--gray-mid); }
+    .service-card { background: var(--black); padding: 2.2rem; position: relative; overflow: hidden; transition: background 0.3s; }
+    .service-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--orange); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-card:hover { background: var(--gray-dark); }
+    .service-icon { width: 40px; height: 40px; stroke: var(--orange); fill: none; stroke-width: 1.5; margin-bottom: 1.4rem; }
+    .service-name { font-family: 'Pixelify Sans', monospace; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--white); margin-bottom: 0.65rem; }
+    .service-desc { color: var(--gray-muted); font-size: 0.86rem; font-weight: 300; line-height: 1.72; }
+
+    /* PORTFOLIO */
+    .portfolio-bg { background: var(--gray-dark); }
+    .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--gray-mid); border: 1px solid var(--gray-mid); }
+    .portfolio-item { aspect-ratio: 4/3; background: var(--black); position: relative; overflow: hidden; transition: background 0.3s; }
+    .portfolio-item:hover { background: #0f0f0f; }
+    .portfolio-item img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; display: none; transition: transform 0.5s ease; }
+    .portfolio-item:hover img { transform: scale(1.04); }
+    .portfolio-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem; color: rgba(255,107,0,0.22); border: 1px dashed rgba(255,107,0,0.12); margin: 8px; }
+    .portfolio-placeholder svg { width: 28px; height: 28px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+    .portfolio-placeholder p { font-family: 'Pixelify Sans', monospace; font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase; }
+    .portfolio-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,10,0.85) 0%, transparent 60%); display: flex; align-items: flex-end; padding: 1.2rem; opacity: 0; transition: opacity 0.35s; }
+    .portfolio-item:hover .portfolio-overlay { opacity: 1; }
+    .portfolio-caption { font-family: 'Pixelify Sans', monospace; font-size: 0.8rem; letter-spacing: 0.08em; color: var(--white); }
+
+    /* CONTACTS */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+    .contact-list { display: flex; flex-direction: column; gap: 2rem; }
+    .contact-row { display: flex; gap: 1.2rem; align-items: flex-start; }
+    .contact-icon-box { width: 40px; height: 40px; flex-shrink: 0; border: 1px solid rgba(255,107,0,0.25); display: flex; align-items: center; justify-content: center; }
+    .contact-icon-box svg { width: 16px; height: 16px; stroke: var(--orange); fill: none; stroke-width: 1.5; }
+    .contact-label { font-family: 'Pixelify Sans', monospace; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.3rem; }
+    .contact-value { color: var(--white); font-size: 0.92rem; text-decoration: none; transition: color 0.2s; display: block; }
+    .contact-value:hover { color: var(--orange); }
+    .map-box { background: var(--gray-mid); border: 1px solid rgba(255,107,0,0.1); height: 300px; display: flex; align-items: center; justify-content: center; color: var(--gray-muted); font-family: 'Pixelify Sans', monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; overflow: hidden; }
+    .map-box iframe { width: 100%; height: 100%; border: 0; }
+
+    /* FOOTER */
+    footer { background: var(--black); border-top: 1px solid var(--gray-mid); padding: 1.8rem 3.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+    .footer-logo img { height: 22px; filter: invert(1); mix-blend-mode: screen; }
+    .footer-right { display: flex; align-items: center; gap: 2rem; }
+    .footer-icon { color: var(--gray-muted); transition: color 0.2s; text-decoration: none; }
+    .footer-icon:hover { color: var(--orange); }
+    .footer-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+    .footer-copy { font-size: 0.68rem; color: var(--gray-muted); letter-spacing: 0.07em; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+        .hero { grid-template-columns: 1fr; grid-template-rows: auto; text-align: center; padding: 7rem 1.5rem 4rem; gap: 2.5rem; }
+        .hero-kw-tl, .hero-kw-bl { grid-column: 1; grid-row: auto; justify-self: center; text-align: center; }
+        .hero-kw-tr, .hero-kw-br { display: none; }
+        .hero-center { grid-column: 1; grid-row: auto; padding: 0; }
+        .hero-bottom { grid-column: 1; grid-row: auto; position: static; }
+        .hero-logo-img { width: clamp(180px, 60vw, 280px); }
+        .scroll-hint { display: none; }
+        nav { padding: 1rem 1.4rem; }
+        .hamburger { display: flex; }
+        .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; background: rgba(10,10,10,0.97); flex-direction: column; padding: 1.5rem 1.4rem; gap: 1.4rem; border-bottom: 1px solid rgba(255,107,0,0.15); }
+        .nav-links.open { display: flex; }
+        .section-wrap { padding: 5rem 1.4rem; }
+        .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+        .portfolio-grid { grid-template-columns: 1fr 1fr; }
+        footer { flex-direction: column; text-align: center; padding: 1.5rem; gap: 0.8rem; }
+        .hero-cta { flex-direction: column; align-items: center; width: 100%; }
+        .btn-primary, .btn-outline { width: 100%; max-width: 280px; text-align: center; }
+    }
+    @media (max-width: 520px) { .portfolio-grid { grid-template-columns: 1fr; } .services-grid { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <a href="#home" class="nav-logo">
+        <img src="MONOM-logotipo-positivo.png" alt="MONOM">
+    </a>
+    <button class="hamburger" aria-label="Apri menu" onclick="document.getElementById('nav-menu').classList.toggle('open')">
+        <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="nav-menu">
+        <li><a href="#servizi" onclick="document.getElementById('nav-menu').classList.remove('open')">Servizi</a></li>
+        <li><a href="#portfolio" onclick="document.getElementById('nav-menu').classList.remove('open')">Portfolio</a></li>
+        <li><a href="#contatti" onclick="document.getElementById('nav-menu').classList.remove('open')">Contatti</a></li>
+    </ul>
+</nav>
+
+
+<!-- HERO -->
+<section id="home" class="hero">
+
+    <div class="hero-kw-tl">
+        <span class="kw-big">Stampa <span class="orange">3D</span></span>
+        <span class="kw-small">Produzione &middot; Materiali Avanzati</span>
+    </div>
+
+    <div class="hero-kw-tr">
+        <span class="kw-big">Prototip-<br>azione</span>
+        <span class="kw-small">Rapid &middot; Funzionale</span>
+    </div>
+
+    <div class="hero-center">
+        <!-- LOGO WORDMARK — file deve stare nella stessa cartella di index.html su GitHub -->
+        <img src="MONOM-logotipo-positivo.png" alt="MONOM" class="hero-logo-img">
+
+        <!--
+            ICONA STILIZZATA (croce pixel del logo MONOM).
+            Se hai un file separato per l'icona, sostituisci con:
+            <img src="MONOM-icona.png" alt="" style="width:50px; filter:invert(1) sepia(1) saturate(10) hue-rotate(10deg);">
+        -->
+        <svg class="pixel-icon" viewBox="0 0 50 50" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <rect x="19" y="2"  width="12" height="12" rx="2.5"/>
+            <rect x="2"  y="19" width="12" height="12" rx="2.5"/>
+            <rect x="19" y="19" width="12" height="12" rx="2.5"/>
+            <rect x="36" y="19" width="12" height="12" rx="2.5"/>
+            <rect x="19" y="36" width="12" height="12" rx="2.5"/>
+        </svg>
+    </div>
+
+    <div class="hero-kw-bl">
+        <span class="kw-big">Scansioni<br><span class="orange">3D</span></span>
+        <span class="kw-small">Acquisizione &middot; Digitale</span>
+    </div>
+
+    <div class="hero-kw-br">
+        <span class="kw-big">Reverse<br>Eng.</span>
+        <span class="kw-small">Analisi &middot; Ricostruzione</span>
+    </div>
+
+    <div class="hero-bottom">
+        <p class="hero-tagline">Dalla mente alla realt&agrave; &nbsp;&middot;&nbsp; in tre dimensioni</p>
+        <div class="hero-cta">
+            <a href="#portfolio" class="btn-primary">Scopri i Progetti</a>
+            <a href="#contatti" class="btn-outline">Contattaci</a>
+        </div>
+    </div>
+
+    <div class="scroll-hint">Scorri</div>
+</section>
+
+<div class="divider"></div>
+
+
+<!-- SERVIZI -->
+<section id="servizi">
+    <div class="section-wrap">
+        <p class="section-label">// Cosa facciamo</p>
+        <h2 class="section-title">I Nostri Servizi</h2>
+        <p class="section-desc">Un percorso completo dalla progettazione alla realizzazione fisica, con tecnologie all&rsquo;avanguardia.</p>
+        <div class="services-grid">
+
+            <div class="service-card">
+                <svg class="service-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+                <p class="service-name">Progettazione 2D e 3D</p>
+                <p class="service-desc">Modelli digitali 2D e 3D personalizzati, partendo dalle tue idee o da specifiche tecniche con strumenti CAD professionali.</p>
+            </div>
+
+            <div class="service-card">
+                <svg class="service-icon" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="5" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="19"/><line x1="5" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="19" y2="12"/></svg>
+                <p class="service-name">Scansioni 3D</p>
+                <p class="service-desc">Acquisizione digitale precisa di oggetti fisici tramite scansione 3D, per riproduzione, analisi o archiviazione digitale.</p>
+            </div>
+
+            <div class="service-card">
+                <svg class="service-icon" viewBox="0 0 24 24"><polyline points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+                <p class="service-name">Stampa 3D</p>
+                <p class="service-desc">Produzione di oggetti tridimensionali da file digitali, con diverse tecnologie e materiali per ogni esigenza professionale.</p>
+            </div>
+
+            <div class="service-card">
+                <svg class="service-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                <p class="service-name">Prototipazione</p>
+                <p class="service-desc">Sviluppo rapido di prototipi funzionali per validare concept, testare ergonomia e accelerare il ciclo di sviluppo prodotto.</p>
+            </div>
+
+            <div class="service-card">
+                <svg class="service-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8.5 8.5L5.5 5.5"/><path d="M15.5 8.5L18.5 5.5"/><path d="M8.5 15.5L5.5 18.5"/><path d="M15.5 15.5L18.5 18.5"/><circle cx="12" cy="12" r="3"/></svg>
+                <p class="service-name">Reverse Engineering</p>
+                <p class="service-desc">Analisi e ricostruzione digitale di componenti fisici esistenti per replicarli, ottimizzarli o integrarli in nuovi progetti.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<div class="divider"></div>
+
+
+<!-- PORTFOLIO -->
+<div class="portfolio-bg" id="portfolio">
+    <div class="section-wrap">
+        <p class="section-label">// I Nostri Lavori</p>
+        <h2 class="section-title">Portfolio</h2>
+        <p class="section-desc">Una selezione dei progetti realizzati. Ogni oggetto nasce da un&rsquo;idea e prende forma con precisione millimetrica.</p>
+        <!--
+        COME AGGIUNGERE FOTO:
+        1. Carica i file immagine su GitHub nella stessa cartella di index.html
+        2. Imposta src="nome-foto.jpg" sull'img tag
+        3. Rimuovi display:none dall'img tag
+        4. Modifica il testo della portfolio-caption
+        -->
+        <div class="portfolio-grid">
+
+            <div class="portfolio-item">
+                <img src="" alt="Progetto 1" style="display:none;">
+                <div class="portfolio-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Aggiungi foto</p></div>
+                <div class="portfolio-overlay"><span class="portfolio-caption">Progetto 1</span></div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="" alt="Progetto 2" style="display:none;">
+                <div class="portfolio-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Aggiungi foto</p></div>
+                <div class="portfolio-overlay"><span class="portfolio-caption">Progetto 2</span></div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="" alt="Progetto 3" style="display:none;">
+                <div class="portfolio-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Aggiungi foto</p></div>
+                <div class="portfolio-overlay"><span class="portfolio-caption">Progetto 3</span></div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="" alt="Progetto 4" style="display:none;">
+                <div class="portfolio-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Aggiungi foto</p></div>
+                <div class="portfolio-overlay"><span class="portfolio-caption">Progetto 4</span></div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="" alt="Progetto 5" style="display:none;">
+                <div class="portfolio-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Aggiungi foto</p></div>
+                <div class="portfolio-overlay"><span class="portfolio-caption">Progetto 5</span></div>
+            </div>
+
+            <div class="portfolio-item">
+                <img src="" alt="Progetto 6" style="display:none;">
+                <div class="portfolio-placeholder"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Aggiungi foto</p></div>
+                <div class="portfolio-overlay"><span class="portfolio-caption">Progetto 6</span></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="divider"></div>
+
+
+<!-- CONTATTI -->
+<section id="contatti">
+    <div class="section-wrap">
+        <p class="section-label">// Trovaci</p>
+        <h2 class="section-title">Contatti</h2>
+        <p class="section-desc">Hai un progetto in mente? Siamo pronti ad ascoltarti e trovare la soluzione giusta insieme.</p>
+        <div class="contact-grid">
+
+            <div class="contact-list">
+
+                <div class="contact-row">
+                    <div class="contact-icon-box"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                    <div>
+                        <p class="contact-label">Email</p>
+                        <a href="mailto:info@monomgroup.it" class="contact-value">info@monomgroup.it</a>
+                    </div>
+                </div>
+
+                <div class="contact-row">
+                    <div class="contact-icon-box"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
+                    <div>
+                        <p class="contact-label">Instagram</p>
+                        <a href="https://instagram.com/monom.grp" target="_blank" rel="noopener" class="contact-value">@monom.grp</a>
+                    </div>
+                </div>
+
+                <div class="contact-row">
+                    <div class="contact-icon-box"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+                    <div>
+                        <p class="contact-label">Sede</p>
+                        <!-- MODIFICA con il vostro indirizzo reale -->
+                        <span class="contact-value">Via Esempio 00 &mdash; 00000 Citt&agrave; (PO)</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!--
+            MAPPA GOOGLE MAPS:
+            1. Vai su maps.google.com, cerca la vostra sede
+            2. Clicca "Condividi" > "Incorpora mappa"
+            3. Copia il codice iframe e incollalo qui sotto
+            -->
+            <div class="map-box">
+                Incolla qui il codice embed Google Maps
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+    <a href="#home" class="footer-logo">
+        <img src="MONOM-logotipo-positivo.png" alt="MONOM">
+    </a>
+    <div class="footer-right">
+        <a href="https://instagram.com/monom.grp" target="_blank" rel="noopener" class="footer-icon" aria-label="Instagram">
+            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="mailto:info@monomgroup.it" class="footer-icon" aria-label="Email">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+        <span class="footer-copy">&copy; 2025 MONOM Group</span>
+    </div>
+</footer>
+
+</body>
+</html>
